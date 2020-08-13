@@ -45,7 +45,7 @@ func (w *watcher) Start(stopCh <-chan struct{}) error {
 		w.patch = w.patchHooksBeta1V1
 	}
 
-	if err = w.caChanged(); err != nil {
+	if err = w.caChanged(nil); err != nil {
 		return err
 	}
 
