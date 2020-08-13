@@ -14,6 +14,8 @@ const (
 	CACert = "ca.crt"
 	// OneWeek Time used for updating a certificate before it expires.
 	OneWeek = 7 * 24 * time.Hour
+	// Organization Default cert organisation
+	Organization = "cluster.local"
 )
 
 type Options struct {
@@ -25,6 +27,7 @@ type Options struct {
 	Name                        string
 	MutatingWebhookConfigName   string
 	ValidatingWebhookConfigName string
+	Organization                string
 }
 
 // ApplyDefaults apply default options
@@ -46,6 +49,9 @@ func (o *Options) ApplyDefaults(name string) Options {
 	}
 	if o.Name == "" {
 		o.Name = name
+	}
+	if o.Organization == "" {
+		o.Organization = Organization
 	}
 	if o.MutatingWebhookConfigName == "" {
 		o.MutatingWebhookConfigName = o.Name

@@ -12,10 +12,6 @@ import (
 	"time"
 )
 
-const (
-	organization = "six-group.com.dev"
-)
-
 // Create the common parts of the cert. These don't change between
 // the root/CA cert and the server cert.
 func (r *reconciler) createCertTemplate(notAfter time.Time) (*x509.Certificate, error) {
@@ -37,7 +33,7 @@ func (r *reconciler) createCertTemplate(notAfter time.Time) (*x509.Certificate, 
 	tmpl := x509.Certificate{
 		SerialNumber: serialNumber,
 		Subject: pkix.Name{
-			Organization: []string{organization},
+			Organization: []string{r.opts.Organization},
 			CommonName:   commonName,
 		},
 		SignatureAlgorithm:    x509.SHA256WithRSA,

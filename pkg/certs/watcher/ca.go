@@ -17,7 +17,7 @@ func (w *watcher) WatchCA() {
 				return
 			}
 
-			_ = w.caChanged(&event)
+			_ = w.handleEvent(&event)
 
 		case err, ok := <-w.caWatcher.Errors:
 			// Channel is closed.
@@ -30,7 +30,7 @@ func (w *watcher) WatchCA() {
 	}
 }
 
-func (w *watcher) caChanged(event *fsnotify.Event) error {
+func (w *watcher) handleEvent(event *fsnotify.Event) error {
 
 	// Only care about events which may modify the contents of the file.
 	if !(isWrite(event) || isRemove(event) || isCreate(event)) {
@@ -47,6 +47,10 @@ func (w *watcher) caChanged(event *fsnotify.Event) error {
 		}
 	}
 
+	return w.syncHooks()
+}
+
+func (w *watcher) syncHooks() error {
 	ctx := context.TODO()
 	dat, err := ioutil.ReadFile(w.certFile)
 	if err != nil {

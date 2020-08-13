@@ -2,18 +2,14 @@ package watcher
 
 import (
 	"context"
-	"github.com/bakito/operator-utils/pkg/certs"
 	"path/filepath"
 
+	"github.com/bakito/operator-utils/pkg/certs"
 	"github.com/fsnotify/fsnotify"
 	"github.com/go-logr/logr"
 	"k8s.io/client-go/rest"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/manager"
-)
-
-const (
-	apiGroup = "admissionregistration.k8s.io"
 )
 
 func New(opts certs.Options) manager.Runnable {
@@ -47,7 +43,7 @@ func (w *watcher) Start(stopCh <-chan struct{}) error {
 		w.patch = w.patchHooksBeta1V1
 	}
 
-	if err = w.caChanged(nil); err != nil {
+	if err = w.syncHooks(); err != nil {
 		return err
 	}
 
