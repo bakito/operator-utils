@@ -58,8 +58,8 @@ func (w *watcher) Start(stopCh <-chan struct{}) error {
 		return err
 	}
 
+	w.logger.Info("Starting webhook ca certificate watcher")
 	go w.WatchCA()
-	w.logger.Info("Starting ca certificate watcher")
 
 	// Block until the stop channel is closed.
 	<-stopCh

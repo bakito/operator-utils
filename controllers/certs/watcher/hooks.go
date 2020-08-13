@@ -39,7 +39,7 @@ func (w *watcher) patchWebhookConfig(ctx context.Context, whc runtime.Object, we
 		return nil
 	}
 
-	log.With(w.logger, whc).Info("Updating CA cert")
+	log.With(w.logger, whc).Info("Updating webhook ca cert")
 	var webhooks []interface{}
 	for _, name := range webhookNames {
 		webhooks = append(webhooks, map[string]interface{}{
