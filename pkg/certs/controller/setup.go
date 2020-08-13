@@ -12,6 +12,7 @@ import (
 	ctrl "sigs.k8s.io/controller-runtime"
 )
 
+// New create a new reconciler
 func New(log logr.Logger, namespace string, secretName string, opts certs.Options) Reconciler {
 	return &reconciler{
 		log:  log,

@@ -18,6 +18,7 @@ const (
 	Organization = "cluster.local"
 )
 
+// Options cert options
 type Options struct {
 	CertDir                     string
 	ServerKey                   string

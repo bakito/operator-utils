@@ -9,7 +9,7 @@ import (
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
-// With get a logger for a given runtime object. namespace, name and objectKind are added as value.
+// With get a logger for a given runtime object. namespace, name and kind are added as value.
 func With(base logr.Logger, object runtime.Object) logr.Logger {
 
 	l := base
@@ -17,13 +17,10 @@ func With(base logr.Logger, object runtime.Object) logr.Logger {
 	if meta, ok := object.(metav1.Object); ok {
 		l = l.WithValues("namespace", meta.GetNamespace(), "name", meta.GetName())
 	}
-	var kind string
-	if ro, ok := object.(runtime.Object); ok {
-		kind = ro.GetObjectKind().GroupVersionKind().Kind
-	}
+	kind := object.GetObjectKind().GroupVersionKind().Kind
 	if kind == "" {
 		split := strings.Split(reflect.TypeOf(object).String(), ".")
 		kind = split[len(split)-1]
 	}
-	return l.WithValues("objectKind", kind)
+	return l.WithValues("kind", kind)
 }

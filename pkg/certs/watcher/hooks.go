@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 
 	"github.com/bakito/operator-utils/pkg/log"
 	arv1 "k8s.io/api/admissionregistration/v1"
@@ -22,10 +23,14 @@ func (w *watcher) supportsV1() (bool, error) {
 	if err != nil {
 		return false, err
 	}
+	return w.supportsV1Internal(apiList)
+}
+
+func (w *watcher) supportsV1Internal(apiList *metav1.APIGroupList) (bool, error) {
 	for _, g := range apiList.Groups {
 		if g.Name == arv1.GroupName {
 			for _, v := range g.Versions {
-				if v.Version == "v1" {
+				if v.Version == arv1.SchemeGroupVersion.Version {
 					return true, nil
 				}
 			}

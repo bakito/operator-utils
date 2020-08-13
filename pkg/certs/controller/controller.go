@@ -91,8 +91,9 @@ func (r *reconciler) Reconcile(ctrl.Request) (ctrl.Result, error) {
 			r.opts.CACert:     caCert,
 		}
 		err = r.patchSecret(ctx, secret)
+		return reconcile.Result{}, err
 	}
-	return reconcile.Result{}, err
+	return reconcile.Result{}, nil
 }
 
 func (r *reconciler) patchSecret(ctx context.Context, secret *corev1.Secret) error {

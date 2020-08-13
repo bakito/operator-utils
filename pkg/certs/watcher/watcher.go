@@ -12,6 +12,7 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/manager"
 )
 
+// New create a new watcher
 func New(opts certs.Options) manager.Runnable {
 	w := &watcher{
 		opts: opts.ApplyDefaults(opts.Name),
@@ -57,7 +58,7 @@ func (w *watcher) Start(stopCh <-chan struct{}) error {
 	}
 
 	w.logger.Info("Starting webhook ca certificate watcher")
-	go w.WatchCA()
+	go w.watchCA()
 
 	// Block until the stop channel is closed.
 	<-stopCh

@@ -7,8 +7,7 @@ import (
 	"github.com/fsnotify/fsnotify"
 )
 
-// WatchCA reads events from the watcher's channel and reacts to changes.
-func (w *watcher) WatchCA() {
+func (w *watcher) watchCA() {
 	for {
 		select {
 		case event, ok := <-w.caWatcher.Events:

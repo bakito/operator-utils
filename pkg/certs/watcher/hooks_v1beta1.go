@@ -4,12 +4,12 @@ import (
 	"bytes"
 	"context"
 
-	arv1bata1 "k8s.io/api/admissionregistration/v1beta1"
+	arv1beta1 "k8s.io/api/admissionregistration/v1beta1"
 	"k8s.io/apimachinery/pkg/types"
 )
 
 func (w *watcher) patchHooksBeta1V1(ctx context.Context, caCert []byte) error {
-	mwc := &arv1bata1.MutatingWebhookConfiguration{}
+	mwc := &arv1beta1.MutatingWebhookConfiguration{}
 	err := w.client.Get(ctx, types.NamespacedName{Name: w.opts.MutatingWebhookConfigName}, mwc)
 	if err != nil {
 		return err
@@ -28,7 +28,7 @@ func (w *watcher) patchHooksBeta1V1(ctx context.Context, caCert []byte) error {
 		return err
 	}
 
-	vwc := &arv1bata1.ValidatingWebhookConfiguration{}
+	vwc := &arv1beta1.ValidatingWebhookConfiguration{}
 	err = w.client.Get(ctx, types.NamespacedName{Name: w.opts.ValidatingWebhookConfigName}, vwc)
 	if err != nil {
 		return err
