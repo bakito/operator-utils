@@ -16,9 +16,7 @@ func (w *watcher) WatchCA() {
 				return
 			}
 
-			if isWrite(event) || isCreate(event) || isRemove(event) {
-				_ = w.caChanged()
-			}
+			_ = w.caChanged(&event)
 
 		case err, ok := <-w.caWatcher.Errors:
 			// Channel is closed.
@@ -31,7 +29,23 @@ func (w *watcher) WatchCA() {
 	}
 }
 
-func (w *watcher) caChanged() error {
+func (w *watcher) caChanged(event *fsnotify.Event) error {
+
+	// Only care about events which may modify the contents of the file.
+	if !(isWrite(event) || isRemove(event) || isCreate(event)) {
+		return nil
+	}
+
+	w.logger.V(1).Info("webhook ca certificate event", "event", event)
+
+	// If the file was removed, re-add the watch.
+	if isRemove(event) {
+		if err := w.caWatcher.Add(w.certFile); err != nil {
+			w.logger.Error(err, "error re-watching file")
+			return err
+		}
+	}
+
 	ctx := context.TODO()
 	dat, err := ioutil.ReadFile(w.certFile)
 	if err != nil {
@@ -41,17 +55,18 @@ func (w *watcher) caChanged() error {
 	if err = w.patch(ctx, dat); err != nil {
 		w.logger.Error(err, "Error patching webhook ca cert")
 	}
+
 	return err
 }
 
-func isWrite(event fsnotify.Event) bool {
-	return event.Op&fsnotify.Write == fsnotify.Write
+func isWrite(event *fsnotify.Event) bool {
+	return event != nil && event.Op&fsnotify.Write == fsnotify.Write
 }
 
-func isCreate(event fsnotify.Event) bool {
-	return event.Op&fsnotify.Create == fsnotify.Create
+func isCreate(event *fsnotify.Event) bool {
+	return event != nil && event.Op&fsnotify.Create == fsnotify.Create
 }
 
-func isRemove(event fsnotify.Event) bool {
-	return event.Op&fsnotify.Remove == fsnotify.Remove
+func isRemove(event *fsnotify.Event) bool {
+	return event != nil && event.Op&fsnotify.Remove == fsnotify.Remove
 }
