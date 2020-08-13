@@ -1,4 +1,4 @@
-package certs
+package controller
 
 import (
 	"crypto/rand"
@@ -18,17 +18,17 @@ const (
 
 // Create the common parts of the cert. These don't change between
 // the root/CA cert and the server cert.
-func (r *Reconciler) createCertTemplate(notAfter time.Time) (*x509.Certificate, error) {
+func (r *reconciler) createCertTemplate(notAfter time.Time) (*x509.Certificate, error) {
 	serialNumberLimit := new(big.Int).Lsh(big.NewInt(1), 128)
 	serialNumber, err := rand.Int(rand.Reader, serialNumberLimit)
 	if err != nil {
 		return nil, errors.New("failed to generate serial number: " + err.Error())
 	}
 
-	serviceName := r.NamespacedName.Name + "." + r.NamespacedName.Namespace
+	serviceName := r.namespacedName.Name + "." + r.namespacedName.Namespace
 	commonName := serviceName + ".svc"
 	serviceNames := []string{
-		r.NamespacedName.Name,
+		r.namespacedName.Name,
 		serviceName,
 		commonName,
 		serviceName + ".svc.cluster.local",
@@ -50,7 +50,7 @@ func (r *Reconciler) createCertTemplate(notAfter time.Time) (*x509.Certificate, 
 }
 
 // Create cert template suitable for CA and hence signing
-func (r *Reconciler) createCACertTemplate(notAfter time.Time) (*x509.Certificate, error) {
+func (r *reconciler) createCACertTemplate(notAfter time.Time) (*x509.Certificate, error) {
 	rootCert, err := r.createCertTemplate(notAfter)
 	if err != nil {
 		return nil, err
@@ -63,7 +63,7 @@ func (r *Reconciler) createCACertTemplate(notAfter time.Time) (*x509.Certificate
 }
 
 // Create cert template that we can use on the server for TLS
-func (r *Reconciler) createServerCertTemplate(notAfter time.Time) (*x509.Certificate, error) {
+func (r *reconciler) createServerCertTemplate(notAfter time.Time) (*x509.Certificate, error) {
 	serverCert, err := r.createCertTemplate(notAfter)
 	if err != nil {
 		return nil, err
@@ -90,7 +90,7 @@ func createCert(template, parent *x509.Certificate, pub interface{}, parentPriv 
 	return
 }
 
-func (r *Reconciler) createCA(notAfter time.Time) (*rsa.PrivateKey, *x509.Certificate, []byte, error) {
+func (r *reconciler) createCA(notAfter time.Time) (*rsa.PrivateKey, *x509.Certificate, []byte, error) {
 	rootKey, err := rsa.GenerateKey(rand.Reader, 2048)
 	if err != nil {
 		return nil, nil, nil, fmt.Errorf("error generating random key: %v", err)
@@ -113,7 +113,7 @@ func (r *Reconciler) createCA(notAfter time.Time) (*rsa.PrivateKey, *x509.Certif
 // to establish trust for clients, CA certificate is used by the
 // client to verify the server authentication chain. notAfter specifies
 // the expiration date.
-func (r *Reconciler) createCerts(notAfter time.Time) (serverKey, serverCert, caCert []byte, err error) {
+func (r *reconciler) createCerts(notAfter time.Time) (serverKey, serverCert, caCert []byte, err error) {
 	// First create a CA certificate and private key
 	caKey, caCertificate, caCertificatePEM, err := r.createCA(notAfter)
 	if err != nil {

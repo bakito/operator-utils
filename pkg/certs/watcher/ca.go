@@ -2,8 +2,9 @@ package watcher
 
 import (
 	"context"
-	"github.com/fsnotify/fsnotify"
 	"io/ioutil"
+
+	"github.com/fsnotify/fsnotify"
 )
 
 // WatchCA reads events from the watcher's channel and reacts to changes.

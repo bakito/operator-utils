@@ -2,6 +2,8 @@ package watcher
 
 import (
 	"context"
+	"github.com/bakito/operator-utils/pkg/certs"
+	"path/filepath"
 
 	"github.com/fsnotify/fsnotify"
 	"github.com/go-logr/logr"
@@ -14,17 +16,17 @@ const (
 	apiGroup = "admissionregistration.k8s.io"
 )
 
-func New(name string, certFile string) manager.Runnable {
-	return &watcher{
-		name:     name,
-		certFile: certFile,
+func New(opts certs.Options) manager.Runnable {
+	w := &watcher{
+		opts: opts.ApplyDefaults(opts.Name),
 	}
+	w.certFile = filepath.Join(opts.CertDir, opts.CACert)
+	return w
 }
 
 type watcher struct {
-	name      string
+	opts      certs.Options
 	certFile  string
-	isV1      bool
 	client    client.Client
 	config    *rest.Config
 	caWatcher *fsnotify.Watcher
