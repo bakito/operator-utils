@@ -51,7 +51,7 @@ var _ = Describe("Watcher", func() {
 
 	Context("NeedLeaderElection", func() {
 		It("should be false", func() {
-			Expect(w.NeedLeaderElection()).To(BeFalse())
+			Ω(w.NeedLeaderElection()).To(BeFalse())
 		})
 	})
 
@@ -73,8 +73,8 @@ var _ = Describe("Watcher", func() {
 			})
 			It("should be true", func() {
 				supports, err := w.supportsV1Internal(apiGroupList)
-				Expect(supports).To(BeTrue())
-				Expect(err).To(BeNil())
+				Ω(supports).To(BeTrue())
+				Ω(err).To(BeNil())
 			})
 		})
 		Context("supportsV1 v1beta1", func() {
@@ -86,8 +86,8 @@ var _ = Describe("Watcher", func() {
 			})
 			It("should be false", func() {
 				supports, err := w.supportsV1Internal(apiGroupList)
-				Expect(supports).To(BeFalse())
-				Expect(err).To(BeNil())
+				Ω(supports).To(BeFalse())
+				Ω(err).To(BeNil())
 			})
 		})
 		Context("supportsV1 error", func() {
@@ -99,8 +99,8 @@ var _ = Describe("Watcher", func() {
 			})
 			It("should be error", func() {
 				supports, err := w.supportsV1Internal(apiGroupList)
-				Expect(supports).To(BeFalse())
-				Expect(err).To(Not(BeNil()))
+				Ω(supports).To(BeFalse())
+				Ω(err).To(HaveOccurred())
 			})
 		})
 	})
@@ -122,18 +122,18 @@ var _ = Describe("Watcher", func() {
 			BeforeEach(func() {
 				mockClient.EXPECT().Patch(ctx, gm.AssignableToTypeOf(&arv1.MutatingWebhookConfiguration{}), gm.Any(), gm.Any()).
 					Do(func(ctx context.Context, obj runtime.Object, patch client.Patch) error {
-						Expect(patch.Type()).To(BeEquivalentTo(types.StrategicMergePatchType))
+						Ω(patch.Type()).To(BeEquivalentTo(types.StrategicMergePatchType))
 						b, err := patch.Data(obj)
-						Expect(err).To(BeNil())
-						Expect(string(b)).To(ContainSubstring(expectedCert))
+						Ω(err).To(BeNil())
+						Ω(string(b)).To(ContainSubstring(expectedCert))
 						return nil
 					})
 				mockClient.EXPECT().Patch(ctx, gm.AssignableToTypeOf(&arv1.ValidatingWebhookConfiguration{}), gm.Any(), gm.Any()).
 					Do(func(ctx context.Context, obj runtime.Object, patch client.Patch) error {
-						Expect(patch.Type()).To(BeEquivalentTo(types.StrategicMergePatchType))
+						Ω(patch.Type()).To(BeEquivalentTo(types.StrategicMergePatchType))
 						b, err := patch.Data(obj)
-						Expect(err).To(BeNil())
-						Expect(string(b)).To(ContainSubstring(expectedCert))
+						Ω(err).To(BeNil())
+						Ω(string(b)).To(ContainSubstring(expectedCert))
 						return nil
 					})
 				mockLog.EXPECT().WithValues(gm.Any(), gm.Any(), gm.Any(), gm.Any()).Return(mockLog).Times(2)
@@ -142,12 +142,12 @@ var _ = Describe("Watcher", func() {
 			})
 
 			It("should not fail", func() {
-				Expect(w.patchHooksV1(ctx, cert)).To(BeNil())
+				Ω(w.patchHooksV1(ctx, cert)).To(BeNil())
 			})
 		})
 		Context("NeedLeaderElection no changes", func() {
 			It("should not fail", func() {
-				Expect(w.patchHooksV1(ctx, oldCert)).To(BeNil())
+				Ω(w.patchHooksV1(ctx, oldCert)).To(BeNil())
 			})
 		})
 	})
@@ -169,18 +169,18 @@ var _ = Describe("Watcher", func() {
 			BeforeEach(func() {
 				mockClient.EXPECT().Patch(ctx, gm.AssignableToTypeOf(&arv1beta1.MutatingWebhookConfiguration{}), gm.Any(), gm.Any()).
 					Do(func(ctx context.Context, obj runtime.Object, patch client.Patch) error {
-						Expect(patch.Type()).To(BeEquivalentTo(types.StrategicMergePatchType))
+						Ω(patch.Type()).To(BeEquivalentTo(types.StrategicMergePatchType))
 						b, err := patch.Data(obj)
-						Expect(err).To(BeNil())
-						Expect(string(b)).To(ContainSubstring(expectedCert))
+						Ω(err).To(BeNil())
+						Ω(string(b)).To(ContainSubstring(expectedCert))
 						return nil
 					})
 				mockClient.EXPECT().Patch(ctx, gm.AssignableToTypeOf(&arv1beta1.ValidatingWebhookConfiguration{}), gm.Any(), gm.Any()).
 					Do(func(ctx context.Context, obj runtime.Object, patch client.Patch) error {
-						Expect(patch.Type()).To(BeEquivalentTo(types.StrategicMergePatchType))
+						Ω(patch.Type()).To(BeEquivalentTo(types.StrategicMergePatchType))
 						b, err := patch.Data(obj)
-						Expect(err).To(BeNil())
-						Expect(string(b)).To(ContainSubstring(expectedCert))
+						Ω(err).To(BeNil())
+						Ω(string(b)).To(ContainSubstring(expectedCert))
 						return nil
 					})
 				mockLog.EXPECT().WithValues(gm.Any(), gm.Any(), gm.Any(), gm.Any()).Return(mockLog).Times(2)
@@ -189,12 +189,12 @@ var _ = Describe("Watcher", func() {
 			})
 
 			It("should not fail", func() {
-				Expect(w.patchHooksBeta1V1(ctx, cert)).To(BeNil())
+				Ω(w.patchHooksBeta1V1(ctx, cert)).To(BeNil())
 			})
 		})
 		Context("NeedLeaderElection no changes", func() {
 			It("should not fail", func() {
-				Expect(w.patchHooksBeta1V1(ctx, oldCert)).To(BeNil())
+				Ω(w.patchHooksBeta1V1(ctx, oldCert)).To(BeNil())
 			})
 		})
 	})

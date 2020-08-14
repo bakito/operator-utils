@@ -37,7 +37,7 @@ var _ = Describe("Log", func() {
 			mockLog.EXPECT().WithValues("kind", "Pod").Return(mockLog)
 		})
 		It("should get a logger", func() {
-			Expect(log.With(mockLog, object)).To(BeEquivalentTo(mockLog))
+			Ω(log.With(mockLog, object)).To(BeEquivalentTo(mockLog))
 		})
 	})
 
@@ -50,7 +50,7 @@ var _ = Describe("Log", func() {
 			mockLog.EXPECT().WithValues("kind", "PodKind").Return(mockLog)
 		})
 		It("should get a logger", func() {
-			Expect(log.With(mockLog, object)).To(BeEquivalentTo(mockLog))
+			Ω(log.With(mockLog, object)).To(BeEquivalentTo(mockLog))
 		})
 	})
 })

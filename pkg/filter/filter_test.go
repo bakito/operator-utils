@@ -38,7 +38,7 @@ var _ = Describe("Filter", func() {
 				pod.Name = "foo"
 			})
 			It("should match", func() {
-				Expect(np.Create(e)).To(BeTrue())
+				Ω(np.Create(e)).To(BeTrue())
 			})
 		})
 
@@ -47,7 +47,7 @@ var _ = Describe("Filter", func() {
 				pod.Name = "bar"
 			})
 			It("should match", func() {
-				Expect(np.Create(e)).To(BeFalse())
+				Ω(np.Create(e)).To(BeFalse())
 			})
 		})
 	})
@@ -66,7 +66,7 @@ var _ = Describe("Filter", func() {
 				pod.Name = "foo"
 			})
 			It("should match", func() {
-				Expect(np.Delete(e)).To(BeTrue())
+				Ω(np.Delete(e)).To(BeTrue())
 			})
 		})
 
@@ -75,7 +75,7 @@ var _ = Describe("Filter", func() {
 				pod.Name = "bar"
 			})
 			It("should match", func() {
-				Expect(np.Delete(e)).To(BeFalse())
+				Ω(np.Delete(e)).To(BeFalse())
 			})
 		})
 	})
@@ -94,7 +94,7 @@ var _ = Describe("Filter", func() {
 				pod.Name = "foo"
 			})
 			It("should match", func() {
-				Expect(np.Update(e)).To(BeTrue())
+				Ω(np.Update(e)).To(BeTrue())
 			})
 		})
 
@@ -103,7 +103,7 @@ var _ = Describe("Filter", func() {
 				pod.Name = "bar"
 			})
 			It("should match", func() {
-				Expect(np.Update(e)).To(BeFalse())
+				Ω(np.Update(e)).To(BeFalse())
 			})
 		})
 	})
@@ -122,7 +122,7 @@ var _ = Describe("Filter", func() {
 				pod.Name = "foo"
 			})
 			It("should match", func() {
-				Expect(np.Generic(e)).To(BeTrue())
+				Ω(np.Generic(e)).To(BeTrue())
 			})
 		})
 
@@ -131,7 +131,7 @@ var _ = Describe("Filter", func() {
 				pod.Name = "bar"
 			})
 			It("should match", func() {
-				Expect(np.Generic(e)).To(BeFalse())
+				Ω(np.Generic(e)).To(BeFalse())
 			})
 		})
 	})

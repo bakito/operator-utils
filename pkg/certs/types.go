@@ -33,6 +33,7 @@ type Options struct {
 
 // ApplyDefaults apply default options
 func (o *Options) ApplyDefaults(name string) Options {
+	o.Name = name
 	if o.CertDir == "" {
 		o.CertDir = Dir
 	}
@@ -47,9 +48,6 @@ func (o *Options) ApplyDefaults(name string) Options {
 	}
 	if o.UpdateBefore == 0 {
 		o.UpdateBefore = OneWeek
-	}
-	if o.Name == "" {
-		o.Name = name
 	}
 	if o.Organization == "" {
 		o.Organization = Organization
