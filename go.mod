@@ -4,8 +4,7 @@ go 1.15
 
 require (
 	github.com/fsnotify/fsnotify v1.4.9
-	// fix untli 0.2.1 is released https://github.com/go-logr/logr/issues/22
-	github.com/go-logr/logr v0.2.1-0.20200730175230-ee2de8da5be6
+	github.com/go-logr/logr v0.2.1
 	github.com/golang/mock v1.4.4
 	github.com/onsi/ginkgo v1.14.2
 	github.com/onsi/gomega v1.10.3
