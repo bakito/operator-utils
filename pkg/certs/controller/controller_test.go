@@ -46,7 +46,7 @@ var _ = Describe("Controller", func() {
 
 			r.Client = mockClient
 			r.log = mockLog
-			r.namespacedName = types.NamespacedName{}
+			r.nn = types.NamespacedName{}
 		})
 		Context("Recreate certs", func() {
 			BeforeEach(func() {
@@ -58,13 +58,13 @@ var _ = Describe("Controller", func() {
 				mockLog.EXPECT().Info(gm.Any()).Times(2)
 			})
 			It("All certs missing", func() {
-				mockClient.EXPECT().Get(gm.Any(), r.namespacedName, gm.AssignableToTypeOf(&corev1.Secret{}))
+				mockClient.EXPECT().Get(gm.Any(), r.nn, gm.AssignableToTypeOf(&corev1.Secret{}))
 				res, err := r.Reconcile(req)
 				Ω(res.Requeue).To(BeFalse())
 				Ω(err).To(BeNil())
 			})
 			It("key missing", func() {
-				mockClient.EXPECT().Get(gm.Any(), r.namespacedName, gm.AssignableToTypeOf(&corev1.Secret{})).
+				mockClient.EXPECT().Get(gm.Any(), r.nn, gm.AssignableToTypeOf(&corev1.Secret{})).
 					Do(func(tx context.Context, key interface{}, sec *corev1.Secret) error {
 						sec.Data = map[string][]byte{
 							certs.ServerCert: {2},
@@ -77,7 +77,7 @@ var _ = Describe("Controller", func() {
 				Ω(err).To(BeNil())
 			})
 			It("cert missing", func() {
-				mockClient.EXPECT().Get(gm.Any(), r.namespacedName, gm.AssignableToTypeOf(&corev1.Secret{})).
+				mockClient.EXPECT().Get(gm.Any(), r.nn, gm.AssignableToTypeOf(&corev1.Secret{})).
 					Do(func(tx context.Context, key interface{}, sec *corev1.Secret) error {
 						sec.Data = map[string][]byte{
 							certs.ServerKey: {1},
@@ -90,7 +90,7 @@ var _ = Describe("Controller", func() {
 				Ω(err).To(BeNil())
 			})
 			It("ca missing", func() {
-				mockClient.EXPECT().Get(gm.Any(), r.namespacedName, gm.AssignableToTypeOf(&corev1.Secret{})).
+				mockClient.EXPECT().Get(gm.Any(), r.nn, gm.AssignableToTypeOf(&corev1.Secret{})).
 					Do(func(tx context.Context, key interface{}, sec *corev1.Secret) error {
 						sec.Data = map[string][]byte{
 							certs.ServerKey:  {1},
@@ -107,7 +107,7 @@ var _ = Describe("Controller", func() {
 
 		Context("invalid cert", func() {
 			BeforeEach(func() {
-				mockClient.EXPECT().Get(gm.Any(), r.namespacedName, gm.AssignableToTypeOf(&corev1.Secret{})).
+				mockClient.EXPECT().Get(gm.Any(), r.nn, gm.AssignableToTypeOf(&corev1.Secret{})).
 					Do(func(tx context.Context, key interface{}, sec *corev1.Secret) error {
 						sec.Data = map[string][]byte{
 							certs.ServerKey:  {1},
@@ -133,7 +133,7 @@ var _ = Describe("Controller", func() {
 		Context("Certs expired", func() {
 			BeforeEach(func() {
 				k, c, ca, _ := r.createCerts(time.Now())
-				mockClient.EXPECT().Get(gm.Any(), r.namespacedName, gm.AssignableToTypeOf(&corev1.Secret{})).
+				mockClient.EXPECT().Get(gm.Any(), r.nn, gm.AssignableToTypeOf(&corev1.Secret{})).
 					Do(func(tx context.Context, key interface{}, sec *corev1.Secret) error {
 						sec.Data = map[string][]byte{
 							certs.ServerKey:  k,
@@ -158,7 +158,7 @@ var _ = Describe("Controller", func() {
 		Context("Certs available", func() {
 			BeforeEach(func() {
 				k, c, ca, _ := r.createCerts(time.Now().AddDate(1, 0, 0))
-				mockClient.EXPECT().Get(gm.Any(), r.namespacedName, gm.AssignableToTypeOf(&corev1.Secret{})).
+				mockClient.EXPECT().Get(gm.Any(), r.nn, gm.AssignableToTypeOf(&corev1.Secret{})).
 					Do(func(tx context.Context, key interface{}, sec *corev1.Secret) error {
 						sec.Data = map[string][]byte{
 							certs.ServerKey:  k,
@@ -179,7 +179,7 @@ var _ = Describe("Controller", func() {
 		Context("Deleted", func() {
 			BeforeEach(func() {
 				err := errors.NewNotFound(schema.GroupResource{}, "")
-				mockClient.EXPECT().Get(gm.Any(), r.namespacedName, gm.AssignableToTypeOf(&corev1.Secret{})).Return(err)
+				mockClient.EXPECT().Get(gm.Any(), r.nn, gm.AssignableToTypeOf(&corev1.Secret{})).Return(err)
 				mockLog.EXPECT().WithValues("certs", gm.Any()).Return(mockLog)
 				mockLog.EXPECT().Error(err, gm.Any())
 			})
@@ -193,7 +193,7 @@ var _ = Describe("Controller", func() {
 		Context("Get with error", func() {
 			BeforeEach(func() {
 				err := fmt.Errorf("Get with error")
-				mockClient.EXPECT().Get(gm.Any(), r.namespacedName, gm.AssignableToTypeOf(&corev1.Secret{})).Return(err)
+				mockClient.EXPECT().Get(gm.Any(), r.nn, gm.AssignableToTypeOf(&corev1.Secret{})).Return(err)
 				mockLog.EXPECT().WithValues("certs", gm.Any()).Return(mockLog)
 			})
 			It("Get with error", func() {

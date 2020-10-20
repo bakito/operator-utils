@@ -4,14 +4,17 @@ import "sigs.k8s.io/controller-runtime/pkg/event"
 
 // NamePredicate only watches objects with given name
 type NamePredicate struct {
-	Names []string
+	Namespace string
+	Names     []string
 }
 
 // Create implements Predicate
 func (p NamePredicate) Create(e event.CreateEvent) bool {
-	for _, n := range p.Names {
-		if e.Meta.GetName() == n {
-			return true
+	if p.Namespace == "" || e.Meta.GetNamespace() == p.Namespace {
+		for _, n := range p.Names {
+			if e.Meta.GetName() == n {
+				return true
+			}
 		}
 	}
 	return false
@@ -19,9 +22,11 @@ func (p NamePredicate) Create(e event.CreateEvent) bool {
 
 // Delete implements Predicate
 func (p NamePredicate) Delete(e event.DeleteEvent) bool {
-	for _, n := range p.Names {
-		if e.Meta.GetName() == n {
-			return true
+	if p.Namespace == "" || e.Meta.GetNamespace() == p.Namespace {
+		for _, n := range p.Names {
+			if e.Meta.GetName() == n {
+				return true
+			}
 		}
 	}
 	return false
@@ -29,9 +34,11 @@ func (p NamePredicate) Delete(e event.DeleteEvent) bool {
 
 // Update implements Predicate
 func (p NamePredicate) Update(e event.UpdateEvent) bool {
-	for _, n := range p.Names {
-		if e.MetaNew.GetName() == n {
-			return true
+	if p.Namespace == "" || e.MetaNew.GetNamespace() == p.Namespace {
+		for _, n := range p.Names {
+			if e.MetaNew.GetName() == n {
+				return true
+			}
 		}
 	}
 	return false
@@ -39,9 +46,11 @@ func (p NamePredicate) Update(e event.UpdateEvent) bool {
 
 // Generic implements Predicate
 func (p NamePredicate) Generic(e event.GenericEvent) bool {
-	for _, n := range p.Names {
-		if e.Meta.GetName() == n {
-			return true
+	if p.Namespace == "" || e.Meta.GetNamespace() == p.Namespace {
+		for _, n := range p.Names {
+			if e.Meta.GetName() == n {
+				return true
+			}
 		}
 	}
 	return false

@@ -26,13 +26,13 @@ type Reconciler interface {
 // reconciler reconciles a ClusterRole object
 type reconciler struct {
 	client.Client
-	log            logr.Logger
-	namespacedName types.NamespacedName
-	opts           certs.Options
+	log  logr.Logger
+	nn   types.NamespacedName
+	opts certs.Options
 }
 
 func (r *reconciler) logger() logr.Logger {
-	return r.log.WithValues("certs", r.namespacedName)
+	return r.log.WithValues("certs", r.nn)
 }
 
 // +kubebuilder:rbac:groups=,resources=secret,verbs=get;list;watch;create;update;patch;delete
@@ -44,7 +44,7 @@ func (r *reconciler) Reconcile(ctrl.Request) (ctrl.Result, error) {
 
 	// Fetch the ClusterRole instance
 	secret := &corev1.Secret{}
-	err := r.Get(ctx, r.namespacedName, secret)
+	err := r.Get(ctx, r.nn, secret)
 	if err != nil {
 		if errors.IsNotFound(err) {
 			certLog.Error(err, "could not find cert secret")

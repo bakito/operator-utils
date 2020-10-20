@@ -21,10 +21,10 @@ func (r *reconciler) createCertTemplate(notAfter time.Time) (*x509.Certificate, 
 		return nil, errors.New("failed to generate serial number: " + err.Error())
 	}
 
-	serviceName := r.namespacedName.Name + "." + r.namespacedName.Namespace
+	serviceName := r.nn.Name + "." + r.nn.Namespace
 	commonName := serviceName + ".svc"
 	serviceNames := []string{
-		r.namespacedName.Name,
+		r.nn.Name,
 		serviceName,
 		commonName,
 		serviceName + ".svc.cluster.local",

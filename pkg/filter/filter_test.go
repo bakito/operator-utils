@@ -17,7 +17,7 @@ var _ = Describe("Filter", func() {
 
 	BeforeEach(func() {
 		np = filter.NamePredicate{
-			[]string{"foo"},
+			Names: []string{"foo"},
 		}
 		pod = &corev1.Pod{
 			ObjectMeta: metav1.ObjectMeta{},

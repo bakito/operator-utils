@@ -17,7 +17,7 @@ func New(log logr.Logger, namespace string, secretName string, opts certs.Option
 	return &reconciler{
 		log:  log,
 		opts: opts.ApplyDefaults(secretName),
-		namespacedName: types.NamespacedName{
+		nn: types.NamespacedName{
 			Namespace: namespace,
 			Name:      secretName,
 		},
@@ -38,6 +38,9 @@ func (r *reconciler) SetupWithManager(mgr ctrl.Manager) error {
 
 	return ctrl.NewControllerManagedBy(mgr).
 		For(&corev1.Secret{}).
-		WithEventFilter(filter.NamePredicate{Names: []string{r.namespacedName.Name}}).
+		WithEventFilter(filter.NamePredicate{
+			Namespace: r.nn.Namespace,
+			Names:     []string{r.nn.Name},
+		}).
 		Complete(r)
 }
