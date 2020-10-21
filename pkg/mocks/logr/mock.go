@@ -82,10 +82,10 @@ func (mr *MockLoggerMockRecorder) Info(arg0 interface{}, arg1 ...interface{}) *g
 }
 
 // V mocks base method
-func (m *MockLogger) V(arg0 int) logr.Logger {
+func (m *MockLogger) V(arg0 int) logr.InfoLogger {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "V", arg0)
-	ret0, _ := ret[0].(logr.Logger)
+	ret0, _ := ret[0].(logr.InfoLogger)
 	return ret0
 }
 
