@@ -2,9 +2,9 @@ package controller
 
 import (
 	"errors"
+	"github.com/bakito/operator-utils/pkg/certs/watcher"
 
 	"github.com/bakito/operator-utils/pkg/certs"
-	"github.com/bakito/operator-utils/pkg/certs/watcher"
 	"github.com/bakito/operator-utils/pkg/filter"
 	"github.com/go-logr/logr"
 	corev1 "k8s.io/api/core/v1"
@@ -24,19 +24,20 @@ func New(log logr.Logger, namespace string, secretName string, opts certs.Option
 	}
 }
 
-func (r *reconciler) SetupWithManager(mgr ctrl.Manager) error {
+func (r *reconciler) SetupWithManager(globalMgr, namespacedMgr ctrl.Manager) error {
 	if r.opts.Name == "" {
 		return errors.New("no name defined")
 	}
-	r.Client = mgr.GetClient()
 
 	// setup ca cert watcher
 	w := watcher.New(r.opts)
-	if err := mgr.Add(w); err != nil {
+	if err := globalMgr.Add(w); err != nil {
 		return err
 	}
 
-	return ctrl.NewControllerManagedBy(mgr).
+	r.Client = namespacedMgr.GetClient()
+
+	return ctrl.NewControllerManagedBy(namespacedMgr).
 		For(&corev1.Secret{}).
 		WithEventFilter(filter.NamePredicate{
 			Namespace: r.nn.Namespace,

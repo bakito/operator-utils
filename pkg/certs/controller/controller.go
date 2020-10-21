@@ -20,7 +20,7 @@ import (
 
 // Reconciler interface
 type Reconciler interface {
-	SetupWithManager(mgr ctrl.Manager) error
+	SetupWithManager(globalMgr, namespacedMgr ctrl.Manager) error
 }
 
 // reconciler reconciles a ClusterRole object
