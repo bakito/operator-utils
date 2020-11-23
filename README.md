@@ -3,7 +3,7 @@
 # Operator Utils
 A collection of reusable utils when writing operators
 
-## wehook certs controller
+## webhook certs controller
 A Controller that automatically creates/updates certs for webhooks.
-The certs are stored in a secret. The secret is mounted as volumne into a pod.
-Once the volumne is updated in the pod. The ca certs in the webhook configurations are updated.
+The certs are stored in a secret. The secret is mounted as volume into a pod.
+Once the volume is updated in the pod. The ca certs in the webhook configurations are updated.
