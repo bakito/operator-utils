@@ -30,7 +30,7 @@ var _ = Describe("Filter", func() {
 		)
 		BeforeEach(func() {
 			e = event.CreateEvent{
-				Meta: pod,
+				Object: pod,
 			}
 		})
 		Context("Create match", func() {
@@ -58,7 +58,7 @@ var _ = Describe("Filter", func() {
 		)
 		BeforeEach(func() {
 			e = event.DeleteEvent{
-				Meta: pod,
+				Object: pod,
 			}
 		})
 		Context("Delete match", func() {
@@ -86,7 +86,7 @@ var _ = Describe("Filter", func() {
 		)
 		BeforeEach(func() {
 			e = event.UpdateEvent{
-				MetaNew: pod,
+				ObjectNew: pod,
 			}
 		})
 		Context("Update match", func() {
@@ -114,7 +114,7 @@ var _ = Describe("Filter", func() {
 		)
 		BeforeEach(func() {
 			e = event.GenericEvent{
-				Meta: pod,
+				Object: pod,
 			}
 		})
 		Context("Generic match", func() {

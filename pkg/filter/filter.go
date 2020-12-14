@@ -10,9 +10,9 @@ type NamePredicate struct {
 
 // Create implements Predicate
 func (p NamePredicate) Create(e event.CreateEvent) bool {
-	if p.Namespace == "" || e.Meta.GetNamespace() == p.Namespace {
+	if p.Namespace == "" || e.Object.GetNamespace() == p.Namespace {
 		for _, n := range p.Names {
-			if e.Meta.GetName() == n {
+			if e.Object.GetName() == n {
 				return true
 			}
 		}
@@ -22,9 +22,9 @@ func (p NamePredicate) Create(e event.CreateEvent) bool {
 
 // Delete implements Predicate
 func (p NamePredicate) Delete(e event.DeleteEvent) bool {
-	if p.Namespace == "" || e.Meta.GetNamespace() == p.Namespace {
+	if p.Namespace == "" || e.Object.GetNamespace() == p.Namespace {
 		for _, n := range p.Names {
-			if e.Meta.GetName() == n {
+			if e.Object.GetName() == n {
 				return true
 			}
 		}
@@ -34,9 +34,9 @@ func (p NamePredicate) Delete(e event.DeleteEvent) bool {
 
 // Update implements Predicate
 func (p NamePredicate) Update(e event.UpdateEvent) bool {
-	if p.Namespace == "" || e.MetaNew.GetNamespace() == p.Namespace {
+	if p.Namespace == "" || e.ObjectNew.GetNamespace() == p.Namespace {
 		for _, n := range p.Names {
-			if e.MetaNew.GetName() == n {
+			if e.ObjectNew.GetName() == n {
 				return true
 			}
 		}
@@ -46,9 +46,9 @@ func (p NamePredicate) Update(e event.UpdateEvent) bool {
 
 // Generic implements Predicate
 func (p NamePredicate) Generic(e event.GenericEvent) bool {
-	if p.Namespace == "" || e.Meta.GetNamespace() == p.Namespace {
+	if p.Namespace == "" || e.Object.GetNamespace() == p.Namespace {
 		for _, n := range p.Names {
-			if e.Meta.GetName() == n {
+			if e.Object.GetName() == n {
 				return true
 			}
 		}

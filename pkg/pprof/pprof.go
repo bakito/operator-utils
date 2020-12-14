@@ -20,7 +20,7 @@ type pprofRunner struct {
 	addr string
 }
 
-func (ppr *pprofRunner) Start(stop <-chan struct{}) error {
+func (ppr *pprofRunner) Start(ctx context.Context) error {
 	log := ctrl.Log.WithName("pprof").WithValues("addr", ppr.addr)
 	log.Info("metrics server is starting to pprof\"")
 
@@ -40,7 +40,7 @@ func (ppr *pprofRunner) Start(stop <-chan struct{}) error {
 	go func() {
 		log.Error(srv.ListenAndServe(), "error running pprof service")
 	}()
-	<-stop
+	<-ctx.Done()
 	log.Info("stopping pprof service")
 	_ = srv.Shutdown(context.TODO())
 	return nil

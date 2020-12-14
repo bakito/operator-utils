@@ -38,8 +38,7 @@ func (r *reconciler) logger() logr.Logger {
 // +kubebuilder:rbac:groups=,resources=secret,verbs=get;list;watch;create;update;patch;delete
 // +kubebuilder:rbac:groups=admissionregistration.k8s.io,resources=mutatingwebhookconfigurations;validatingwebhookconfigurations,verbs=get;list;watch;create;update;patch
 
-func (r *reconciler) Reconcile(ctrl.Request) (ctrl.Result, error) {
-	ctx := context.Background()
+func (r *reconciler) Reconcile(ctx context.Context, _ ctrl.Request) (ctrl.Result, error) {
 	certLog := r.logger()
 
 	// Fetch the ClusterRole instance

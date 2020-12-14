@@ -8,7 +8,6 @@ import (
 
 	"github.com/bakito/operator-utils/pkg/log"
 	arv1 "k8s.io/api/admissionregistration/v1"
-	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/types"
 	"k8s.io/client-go/discovery"
 	"sigs.k8s.io/controller-runtime/pkg/client"
@@ -40,7 +39,7 @@ func (w *watcher) supportsV1Internal(apiList *metav1.APIGroupList) (bool, error)
 	return false, fmt.Errorf("could not find api group %q", arv1.GroupName)
 }
 
-func (w *watcher) patchWebhookConfig(ctx context.Context, whc runtime.Object, webhookNames []string, cert []byte) error {
+func (w *watcher) patchWebhookConfig(ctx context.Context, whc client.Object, webhookNames []string, cert []byte) error {
 	if len(webhookNames) == 0 {
 		return nil
 	}

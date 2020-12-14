@@ -31,7 +31,7 @@ type watcher struct {
 	logger    logr.Logger
 }
 
-func (w *watcher) Start(stopCh <-chan struct{}) error {
+func (w *watcher) Start(ctx context.Context) error {
 	var err error
 
 	isV1, err := w.supportsV1()
@@ -61,7 +61,7 @@ func (w *watcher) Start(stopCh <-chan struct{}) error {
 	go w.watchCA()
 
 	// Block until the stop channel is closed.
-	<-stopCh
+	<-ctx.Done()
 	return w.caWatcher.Close()
 }
 

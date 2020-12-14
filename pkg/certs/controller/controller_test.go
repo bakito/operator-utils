@@ -26,11 +26,13 @@ var _ = Describe("Controller", func() {
 		r        *reconciler
 		mockCtrl *gm.Controller //gomock struct
 		mockLog  *mock_logr.MockLogger
+		ctx      context.Context
 	)
 	BeforeEach(func() {
 		mockCtrl = gm.NewController(GinkgoT())
 		mockLog = mock_logr.NewMockLogger(mockCtrl)
 		r = New(mockLog, "", "", certs.Options{}).(*reconciler)
+		ctx = context.Background()
 	})
 	AfterEach(func() {
 		mockCtrl.Finish()
@@ -59,7 +61,7 @@ var _ = Describe("Controller", func() {
 			})
 			It("All certs missing", func() {
 				mockClient.EXPECT().Get(gm.Any(), r.nn, gm.AssignableToTypeOf(&corev1.Secret{}))
-				res, err := r.Reconcile(req)
+				res, err := r.Reconcile(ctx, req)
 				Ω(res.Requeue).To(BeFalse())
 				Ω(err).To(BeNil())
 			})
@@ -72,7 +74,7 @@ var _ = Describe("Controller", func() {
 						}
 						return nil
 					})
-				res, err := r.Reconcile(req)
+				res, err := r.Reconcile(ctx, req)
 				Ω(res.Requeue).To(BeFalse())
 				Ω(err).To(BeNil())
 			})
@@ -85,7 +87,7 @@ var _ = Describe("Controller", func() {
 						}
 						return nil
 					})
-				res, err := r.Reconcile(req)
+				res, err := r.Reconcile(ctx, req)
 				Ω(res.Requeue).To(BeFalse())
 				Ω(err).To(BeNil())
 			})
@@ -98,7 +100,7 @@ var _ = Describe("Controller", func() {
 						}
 						return nil
 					})
-				res, err := r.Reconcile(req)
+				res, err := r.Reconcile(ctx, req)
 				Ω(res.Requeue).To(BeFalse())
 				Ω(err).To(BeNil())
 			})
@@ -125,7 +127,7 @@ var _ = Describe("Controller", func() {
 				mockLog.EXPECT().Info(gm.Any())
 			})
 			It("invalid cert", func() {
-				res, err := r.Reconcile(req)
+				res, err := r.Reconcile(ctx, req)
 				Ω(res.Requeue).To(BeFalse())
 				Ω(err).To(BeNil())
 			})
@@ -149,7 +151,7 @@ var _ = Describe("Controller", func() {
 				mockLog.EXPECT().Info(gm.Any())
 			})
 			It("Certs expired", func() {
-				res, err := r.Reconcile(req)
+				res, err := r.Reconcile(ctx, req)
 				Ω(res.Requeue).To(BeFalse())
 				Ω(err).To(BeNil())
 			})
@@ -170,7 +172,7 @@ var _ = Describe("Controller", func() {
 				mockLog.EXPECT().WithValues("certs", gm.Any()).Return(mockLog)
 			})
 			It("Recreate available", func() {
-				res, err := r.Reconcile(req)
+				res, err := r.Reconcile(ctx, req)
 				Ω(res.Requeue).To(BeFalse())
 				Ω(err).To(BeNil())
 			})
@@ -184,7 +186,7 @@ var _ = Describe("Controller", func() {
 				mockLog.EXPECT().Error(err, gm.Any())
 			})
 			It("Deleted", func() {
-				res, err := r.Reconcile(req)
+				res, err := r.Reconcile(ctx, req)
 				Ω(res.Requeue).To(BeFalse())
 				Ω(err).To(BeNil())
 			})
@@ -197,7 +199,7 @@ var _ = Describe("Controller", func() {
 				mockLog.EXPECT().WithValues("certs", gm.Any()).Return(mockLog)
 			})
 			It("Get with error", func() {
-				res, err := r.Reconcile(req)
+				res, err := r.Reconcile(ctx, req)
 				Ω(res.Requeue).To(BeFalse())
 				Ω(err).To(HaveOccurred())
 			})
