@@ -7,7 +7,7 @@ require (
 	github.com/go-logr/logr v0.4.0
 	github.com/golang/mock v1.4.4
 	github.com/onsi/ginkgo v1.15.0
-	github.com/onsi/gomega v1.10.4
+	github.com/onsi/gomega v1.10.5
 	k8s.io/api v0.20.2
 	k8s.io/apimachinery v0.20.2
 	k8s.io/client-go v0.20.2
