@@ -5,7 +5,7 @@ go 1.15
 require (
 	github.com/fsnotify/fsnotify v1.4.9
 	github.com/go-logr/logr v0.4.0
-	github.com/golang/mock v1.4.4
+	github.com/golang/mock v1.5.0
 	github.com/onsi/ginkgo v1.15.0
 	github.com/onsi/gomega v1.10.5
 	k8s.io/api v0.20.2
