@@ -1,6 +1,6 @@
 # find or install mockgen
 ifeq (, $(shell which mockgen))
- $(shell go get github.com/golang/mock/mockgen@v1.4.3)
+ $(shell go get github.com/golang/mock/mockgen)
 endif
 ifeq (, $(shell which ginkgo))
  $(shell go get github.com/onsi/ginkgo/ginkgo)
