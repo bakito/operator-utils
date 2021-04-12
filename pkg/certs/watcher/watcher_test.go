@@ -3,6 +3,7 @@ package watcher
 import (
 	"context"
 	"encoding/base64"
+
 	"github.com/bakito/operator-utils/pkg/certs"
 	mock_client "github.com/bakito/operator-utils/pkg/mocks/client"
 	mock_logr "github.com/bakito/operator-utils/pkg/mocks/logr"

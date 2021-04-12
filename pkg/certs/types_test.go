@@ -1,10 +1,11 @@
 package certs_test
 
 import (
+	"time"
+
 	. "github.com/bakito/operator-utils/pkg/certs"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"time"
 )
 
 var _ = Describe("Types", func() {

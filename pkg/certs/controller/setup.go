@@ -2,9 +2,9 @@ package controller
 
 import (
 	"errors"
-	"github.com/bakito/operator-utils/pkg/certs/watcher"
 
 	"github.com/bakito/operator-utils/pkg/certs"
+	"github.com/bakito/operator-utils/pkg/certs/watcher"
 	"github.com/bakito/operator-utils/pkg/filter"
 	"github.com/go-logr/logr"
 	corev1 "k8s.io/api/core/v1"
