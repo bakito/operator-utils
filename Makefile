@@ -5,9 +5,6 @@ endif
 ifeq (, $(shell which ginkgo))
  $(shell go get github.com/onsi/ginkgo/ginkgo)
 endif
-ifeq (, $(shell which gopherbadger))
- $(shell go get github.com/jpoles1/gopherbadger)
-endif
 
 # generate mocks
 mocks:
@@ -24,4 +21,4 @@ vet:
 
 # Run tests
 test: mocks fmt vet
-	gopherbadger -md="README.md" -png=false
+	go test ./...  

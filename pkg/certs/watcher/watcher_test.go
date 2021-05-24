@@ -13,7 +13,6 @@ import (
 	arv1 "k8s.io/api/admissionregistration/v1"
 	arv1beta1 "k8s.io/api/admissionregistration/v1beta1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/types"
 	"k8s.io/client-go/rest"
 	"sigs.k8s.io/controller-runtime/pkg/client"
@@ -122,7 +121,7 @@ var _ = Describe("Watcher", func() {
 		Context("NeedLeaderElection with changes", func() {
 			BeforeEach(func() {
 				mockClient.EXPECT().Patch(ctx, gm.AssignableToTypeOf(&arv1.MutatingWebhookConfiguration{}), gm.Any(), gm.Any()).
-					Do(func(ctx context.Context, obj runtime.Object, patch client.Patch) error {
+					Do(func(ctx context.Context, obj client.Object, patch client.Patch) error {
 						Ω(patch.Type()).To(BeEquivalentTo(types.StrategicMergePatchType))
 						b, err := patch.Data(obj)
 						Ω(err).To(BeNil())
@@ -130,7 +129,7 @@ var _ = Describe("Watcher", func() {
 						return nil
 					})
 				mockClient.EXPECT().Patch(ctx, gm.AssignableToTypeOf(&arv1.ValidatingWebhookConfiguration{}), gm.Any(), gm.Any()).
-					Do(func(ctx context.Context, obj runtime.Object, patch client.Patch) error {
+					Do(func(ctx context.Context, obj client.Object, patch client.Patch) error {
 						Ω(patch.Type()).To(BeEquivalentTo(types.StrategicMergePatchType))
 						b, err := patch.Data(obj)
 						Ω(err).To(BeNil())
@@ -169,7 +168,7 @@ var _ = Describe("Watcher", func() {
 		Context("NeedLeaderElection with changes", func() {
 			BeforeEach(func() {
 				mockClient.EXPECT().Patch(ctx, gm.AssignableToTypeOf(&arv1beta1.MutatingWebhookConfiguration{}), gm.Any(), gm.Any()).
-					Do(func(ctx context.Context, obj runtime.Object, patch client.Patch) error {
+					Do(func(ctx context.Context, obj client.Object, patch client.Patch) error {
 						Ω(patch.Type()).To(BeEquivalentTo(types.StrategicMergePatchType))
 						b, err := patch.Data(obj)
 						Ω(err).To(BeNil())
@@ -177,7 +176,7 @@ var _ = Describe("Watcher", func() {
 						return nil
 					})
 				mockClient.EXPECT().Patch(ctx, gm.AssignableToTypeOf(&arv1beta1.ValidatingWebhookConfiguration{}), gm.Any(), gm.Any()).
-					Do(func(ctx context.Context, obj runtime.Object, patch client.Patch) error {
+					Do(func(ctx context.Context, obj client.Object, patch client.Patch) error {
 						Ω(patch.Type()).To(BeEquivalentTo(types.StrategicMergePatchType))
 						b, err := patch.Data(obj)
 						Ω(err).To(BeNil())
