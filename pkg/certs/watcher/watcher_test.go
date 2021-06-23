@@ -121,7 +121,7 @@ var _ = Describe("Watcher", func() {
 		Context("NeedLeaderElection with changes", func() {
 			BeforeEach(func() {
 				mockClient.EXPECT().Patch(ctx, gm.AssignableToTypeOf(&arv1.MutatingWebhookConfiguration{}), gm.Any(), gm.Any()).
-					Do(func(ctx context.Context, obj client.Object, patch client.Patch) error {
+					Do(func(ctx context.Context, obj client.Object, patch client.Patch, opts ...client.PatchOption) error {
 						Ω(patch.Type()).To(BeEquivalentTo(types.StrategicMergePatchType))
 						b, err := patch.Data(obj)
 						Ω(err).To(BeNil())
@@ -129,7 +129,7 @@ var _ = Describe("Watcher", func() {
 						return nil
 					})
 				mockClient.EXPECT().Patch(ctx, gm.AssignableToTypeOf(&arv1.ValidatingWebhookConfiguration{}), gm.Any(), gm.Any()).
-					Do(func(ctx context.Context, obj client.Object, patch client.Patch) error {
+					Do(func(ctx context.Context, obj client.Object, patch client.Patch, opts ...client.PatchOption) error {
 						Ω(patch.Type()).To(BeEquivalentTo(types.StrategicMergePatchType))
 						b, err := patch.Data(obj)
 						Ω(err).To(BeNil())
@@ -168,7 +168,7 @@ var _ = Describe("Watcher", func() {
 		Context("NeedLeaderElection with changes", func() {
 			BeforeEach(func() {
 				mockClient.EXPECT().Patch(ctx, gm.AssignableToTypeOf(&arv1beta1.MutatingWebhookConfiguration{}), gm.Any(), gm.Any()).
-					Do(func(ctx context.Context, obj client.Object, patch client.Patch) error {
+					Do(func(ctx context.Context, obj client.Object, patch client.Patch, opts ...client.PatchOption) error {
 						Ω(patch.Type()).To(BeEquivalentTo(types.StrategicMergePatchType))
 						b, err := patch.Data(obj)
 						Ω(err).To(BeNil())
@@ -176,7 +176,7 @@ var _ = Describe("Watcher", func() {
 						return nil
 					})
 				mockClient.EXPECT().Patch(ctx, gm.AssignableToTypeOf(&arv1beta1.ValidatingWebhookConfiguration{}), gm.Any(), gm.Any()).
-					Do(func(ctx context.Context, obj client.Object, patch client.Patch) error {
+					Do(func(ctx context.Context, obj client.Object, patch client.Patch, opts ...client.PatchOption) error {
 						Ω(patch.Type()).To(BeEquivalentTo(types.StrategicMergePatchType))
 						b, err := patch.Data(obj)
 						Ω(err).To(BeNil())
