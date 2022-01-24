@@ -3,12 +3,13 @@ package watcher
 import (
 	"context"
 	"encoding/base64"
+	"github.com/go-logr/logr"
 
 	"github.com/bakito/operator-utils/pkg/certs"
 	mock_client "github.com/bakito/operator-utils/pkg/mocks/client"
 	mock_logr "github.com/bakito/operator-utils/pkg/mocks/logr"
 	gm "github.com/golang/mock/gomock"
-	. "github.com/onsi/ginkgo"
+	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 	arv1 "k8s.io/api/admissionregistration/v1"
 	arv1beta1 "k8s.io/api/admissionregistration/v1beta1"
@@ -23,7 +24,7 @@ var _ = Describe("Watcher", func() {
 		ctx          context.Context
 		w            *watcher
 		mockCtrl     *gm.Controller //gomock struct
-		mockLog      *mock_logr.MockLogger
+		mockSink     *mock_logr.MockLogSink
 		mockClient   *mock_client.MockClient
 		cert         []byte
 		oldCert      []byte
@@ -33,12 +34,15 @@ var _ = Describe("Watcher", func() {
 	BeforeEach(func() {
 		ctx = context.TODO()
 		mockCtrl = gm.NewController(GinkgoT())
-		mockLog = mock_logr.NewMockLogger(mockCtrl)
+		mockSink = mock_logr.NewMockLogSink(mockCtrl)
 		mockClient = mock_client.NewMockClient(mockCtrl)
+		log := logr.New(mockSink)
 		w = New(certs.Options{}).(*watcher)
 		w.InjectClient(mockClient)
-		w.InjectLogger(mockLog)
+		w.InjectLogger(log)
 		w.InjectConfig(&rest.Config{})
+		mockSink.EXPECT().Init(gm.Any())
+		mockSink.EXPECT().Enabled(gm.Any()).AnyTimes().Return(true)
 
 		cert = []byte("cert")
 		oldCert = []byte("old-cert")
@@ -136,9 +140,9 @@ var _ = Describe("Watcher", func() {
 						Ω(string(b)).To(ContainSubstring(expectedCert))
 						return nil
 					})
-				mockLog.EXPECT().WithValues(gm.Any(), gm.Any(), gm.Any(), gm.Any()).Return(mockLog).Times(2)
-				mockLog.EXPECT().WithValues(gm.Any(), gm.Any()).Return(mockLog).Times(2)
-				mockLog.EXPECT().Info(gm.Any()).Times(2)
+				mockSink.EXPECT().WithValues(gm.Any(), gm.Any(), gm.Any(), gm.Any(), gm.Any()).Return(mockSink).Times(2)
+				mockSink.EXPECT().WithValues(gm.Any(), gm.Any(), gm.Any()).Return(mockSink).Times(2)
+				mockSink.EXPECT().Info(gm.Any(), gm.Any()).Times(2)
 			})
 
 			It("should not fail", func() {
@@ -183,9 +187,9 @@ var _ = Describe("Watcher", func() {
 						Ω(string(b)).To(ContainSubstring(expectedCert))
 						return nil
 					})
-				mockLog.EXPECT().WithValues(gm.Any(), gm.Any(), gm.Any(), gm.Any()).Return(mockLog).Times(2)
-				mockLog.EXPECT().WithValues(gm.Any(), gm.Any()).Return(mockLog).Times(2)
-				mockLog.EXPECT().Info(gm.Any()).Times(2)
+				mockSink.EXPECT().WithValues(gm.Any(), gm.Any(), gm.Any(), gm.Any(), gm.Any()).Return(mockSink).Times(2)
+				mockSink.EXPECT().WithValues(gm.Any(), gm.Any(), gm.Any()).Return(mockSink).Times(2)
+				mockSink.EXPECT().Info(gm.Any(), gm.Any()).Times(2)
 			})
 
 			It("should not fail", func() {

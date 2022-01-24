@@ -6,13 +6,14 @@ import (
 	"crypto/x509"
 	"encoding/pem"
 	"fmt"
+	"github.com/go-logr/logr"
 	"time"
 
 	"github.com/bakito/operator-utils/pkg/certs"
 	mock_client "github.com/bakito/operator-utils/pkg/mocks/client"
 	mock_logr "github.com/bakito/operator-utils/pkg/mocks/logr"
 	gm "github.com/golang/mock/gomock"
-	. "github.com/onsi/ginkgo"
+	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/api/errors"
@@ -25,14 +26,18 @@ var _ = Describe("Controller", func() {
 	var (
 		r        *reconciler
 		mockCtrl *gm.Controller //gomock struct
-		mockLog  *mock_logr.MockLogger
+		mockSink *mock_logr.MockLogSink
 		ctx      context.Context
 	)
 	BeforeEach(func() {
 		mockCtrl = gm.NewController(GinkgoT())
-		mockLog = mock_logr.NewMockLogger(mockCtrl)
-		r = New(mockLog, "", "", certs.Options{}).(*reconciler)
+		mockSink = mock_logr.NewMockLogSink(mockCtrl)
+		log := logr.New(mockSink)
+		r = New(log, "", "", certs.Options{}).(*reconciler)
 		ctx = context.Background()
+
+		mockSink.EXPECT().Init(gm.Any())
+		mockSink.EXPECT().Enabled(gm.Any()).AnyTimes().Return(true)
 	})
 	AfterEach(func() {
 		mockCtrl.Finish()
@@ -47,17 +52,16 @@ var _ = Describe("Controller", func() {
 			req = ctrl.Request{}
 
 			r.Client = mockClient
-			r.log = mockLog
 			r.nn = types.NamespacedName{}
 		})
 		Context("Recreate certs", func() {
 			BeforeEach(func() {
 				mockClient.EXPECT().Patch(gm.Any(), gm.AssignableToTypeOf(&corev1.Secret{}), gm.Any())
-				mockLog.EXPECT().WithValues("certs", gm.Any()).Return(mockLog)
-				mockLog.EXPECT().WithValues("cert", gm.Any()).Return(mockLog)
-				mockLog.EXPECT().WithValues("namespace", gm.Any(), "name", gm.Any()).Return(mockLog)
-				mockLog.EXPECT().WithValues("kind", "Secret").Return(mockLog)
-				mockLog.EXPECT().Info(gm.Any()).Times(2)
+				mockSink.EXPECT().WithValues(gm.Any(), "certs", gm.Any()).Return(mockSink)
+				mockSink.EXPECT().WithValues(gm.Any(), "cert", gm.Any()).Return(mockSink)
+				mockSink.EXPECT().WithValues(gm.Any(), "namespace", gm.Any(), "name", gm.Any()).Return(mockSink)
+				mockSink.EXPECT().WithValues(gm.Any(), "kind", "Secret").Return(mockSink)
+				mockSink.EXPECT().Info(gm.Any(), gm.Any()).Times(2)
 			})
 			It("All certs missing", func() {
 				mockClient.EXPECT().Get(gm.Any(), r.nn, gm.AssignableToTypeOf(&corev1.Secret{}))
@@ -120,11 +124,11 @@ var _ = Describe("Controller", func() {
 					})
 				mockClient.EXPECT().Patch(gm.Any(), gm.AssignableToTypeOf(&corev1.Secret{}), gm.Any())
 
-				mockLog.EXPECT().WithValues("certs", gm.Any()).Return(mockLog)
-				mockLog.EXPECT().WithValues("namespace", gm.Any(), "name", gm.Any()).Return(mockLog)
-				mockLog.EXPECT().WithValues("kind", "Secret").Return(mockLog)
-				mockLog.EXPECT().Error(gm.Any(), gm.Any())
-				mockLog.EXPECT().Info(gm.Any())
+				mockSink.EXPECT().WithValues(gm.Any(), "certs", gm.Any()).Return(mockSink)
+				mockSink.EXPECT().WithValues(gm.Any(), "namespace", gm.Any(), "name", gm.Any()).Return(mockSink)
+				mockSink.EXPECT().WithValues(gm.Any(), "kind", "Secret").Return(mockSink)
+				mockSink.EXPECT().Error(gm.Any(), gm.Any(), gm.Any())
+				mockSink.EXPECT().Info(gm.Any(), gm.Any())
 			})
 			It("invalid cert", func() {
 				res, err := r.Reconcile(ctx, req)
@@ -145,10 +149,10 @@ var _ = Describe("Controller", func() {
 						return nil
 					})
 				mockClient.EXPECT().Patch(gm.Any(), gm.AssignableToTypeOf(&corev1.Secret{}), gm.Any())
-				mockLog.EXPECT().WithValues("certs", gm.Any()).Return(mockLog)
-				mockLog.EXPECT().WithValues("namespace", gm.Any(), "name", gm.Any()).Return(mockLog)
-				mockLog.EXPECT().WithValues("kind", "Secret").Return(mockLog)
-				mockLog.EXPECT().Info(gm.Any())
+				mockSink.EXPECT().WithValues(gm.Any(), "certs", gm.Any()).Return(mockSink)
+				mockSink.EXPECT().WithValues(gm.Any(), "namespace", gm.Any(), "name", gm.Any()).Return(mockSink)
+				mockSink.EXPECT().WithValues(gm.Any(), "kind", "Secret").Return(mockSink)
+				mockSink.EXPECT().Info(gm.Any(), gm.Any())
 			})
 			It("Certs expired", func() {
 				res, err := r.Reconcile(ctx, req)
@@ -169,7 +173,7 @@ var _ = Describe("Controller", func() {
 						}
 						return nil
 					})
-				mockLog.EXPECT().WithValues("certs", gm.Any()).Return(mockLog)
+				mockSink.EXPECT().WithValues("certs", gm.Any()).Return(mockSink)
 			})
 			It("Recreate available", func() {
 				res, err := r.Reconcile(ctx, req)
@@ -182,8 +186,8 @@ var _ = Describe("Controller", func() {
 			BeforeEach(func() {
 				err := errors.NewNotFound(schema.GroupResource{}, "")
 				mockClient.EXPECT().Get(gm.Any(), r.nn, gm.AssignableToTypeOf(&corev1.Secret{})).Return(err)
-				mockLog.EXPECT().WithValues("certs", gm.Any()).Return(mockLog)
-				mockLog.EXPECT().Error(err, gm.Any())
+				mockSink.EXPECT().WithValues(gm.Any(), "certs", gm.Any()).Return(mockSink)
+				mockSink.EXPECT().Error(gm.Any(), err, gm.Any())
 			})
 			It("Deleted", func() {
 				res, err := r.Reconcile(ctx, req)
@@ -196,7 +200,7 @@ var _ = Describe("Controller", func() {
 			BeforeEach(func() {
 				err := fmt.Errorf("Get with error")
 				mockClient.EXPECT().Get(gm.Any(), r.nn, gm.AssignableToTypeOf(&corev1.Secret{})).Return(err)
-				mockLog.EXPECT().WithValues("certs", gm.Any()).Return(mockLog)
+				mockSink.EXPECT().WithValues("certs", gm.Any()).Return(mockSink)
 			})
 			It("Get with error", func() {
 				res, err := r.Reconcile(ctx, req)

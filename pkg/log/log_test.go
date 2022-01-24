@@ -3,8 +3,9 @@ package log_test
 import (
 	"github.com/bakito/operator-utils/pkg/log"
 	mock_logr "github.com/bakito/operator-utils/pkg/mocks/logr"
+	"github.com/go-logr/logr"
 	gm "github.com/golang/mock/gomock"
-	. "github.com/onsi/ginkgo"
+	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -14,7 +15,8 @@ var _ = Describe("Log", func() {
 	var (
 		object   *corev1.Pod
 		mockCtrl *gm.Controller //gomock struct
-		mockLog  *mock_logr.MockLogger
+		mockSink *mock_logr.MockLogSink
+		l        logr.Logger
 	)
 
 	BeforeEach(func() {
@@ -24,8 +26,11 @@ var _ = Describe("Log", func() {
 				Name:      "test-name",
 			},
 		}
+		l = logr.New(mockSink)
 		mockCtrl = gm.NewController(GinkgoT())
-		mockLog = mock_logr.NewMockLogger(mockCtrl)
+		mockSink = mock_logr.NewMockLogSink(mockCtrl)
+		mockSink.EXPECT().Init(gm.Any())
+		mockSink.EXPECT().Enabled(gm.Any()).AnyTimes().Return(true)
 	})
 	AfterEach(func() {
 		mockCtrl.Finish()
@@ -33,11 +38,11 @@ var _ = Describe("Log", func() {
 
 	Context("All fields correctly set if no kind available", func() {
 		BeforeEach(func() {
-			mockLog.EXPECT().WithValues("namespace", "test-namespace", "name", "test-name").Return(mockLog)
-			mockLog.EXPECT().WithValues("kind", "Pod").Return(mockLog)
+			mockSink.EXPECT().WithValues("namespace", "test-namespace", "name", "test-name").Return(mockSink)
+			mockSink.EXPECT().WithValues("kind", "Pod").Return(mockSink)
 		})
 		It("should get a logger", func() {
-			Ω(log.With(mockLog, object)).To(BeEquivalentTo(mockLog))
+			Ω(log.With(l, object)).To(BeEquivalentTo(mockSink))
 		})
 	})
 
@@ -46,11 +51,11 @@ var _ = Describe("Log", func() {
 			object.TypeMeta = metav1.TypeMeta{
 				Kind: "PodKind",
 			}
-			mockLog.EXPECT().WithValues("namespace", "test-namespace", "name", "test-name").Return(mockLog)
-			mockLog.EXPECT().WithValues("kind", "PodKind").Return(mockLog)
+			mockSink.EXPECT().WithValues("namespace", "test-namespace", "name", "test-name").Return(mockSink)
+			mockSink.EXPECT().WithValues("kind", "PodKind").Return(mockSink)
 		})
 		It("should get a logger", func() {
-			Ω(log.With(mockLog, object)).To(BeEquivalentTo(mockLog))
+			Ω(log.With(l, object)).To(BeEquivalentTo(mockSink))
 		})
 	})
 })
