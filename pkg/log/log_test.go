@@ -26,11 +26,10 @@ var _ = Describe("Log", func() {
 				Name:      "test-name",
 			},
 		}
-		l = logr.New(mockSink)
 		mockCtrl = gm.NewController(GinkgoT())
 		mockSink = mock_logr.NewMockLogSink(mockCtrl)
+		l = logr.New(mockSink)
 		mockSink.EXPECT().Init(gm.Any())
-		mockSink.EXPECT().Enabled(gm.Any()).AnyTimes().Return(true)
 	})
 	AfterEach(func() {
 		mockCtrl.Finish()
