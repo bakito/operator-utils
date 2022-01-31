@@ -3,7 +3,7 @@ ifeq (, $(shell which mockgen))
  $(shell go install github.com/golang/mock/mockgen@v1.6.0)
 endif
 ifeq (, $(shell which ginkgo))
- $(shell go install github.com/onsi/ginkgo/ginkgo@latest)
+ $(shell go install github.com/onsi/ginkgo/v2/ginkgo@latest)
 endif
 
 # generate mocks
