@@ -2,7 +2,7 @@ package watcher
 
 import (
 	"context"
-	"io/ioutil"
+	"os"
 	"time"
 
 	"github.com/fsnotify/fsnotify"
@@ -51,7 +51,7 @@ func (w *watcher) handleEvent(event *fsnotify.Event) error {
 }
 
 func (w *watcher) syncHooks() error {
-	dat, err := ioutil.ReadFile(w.certFile)
+	dat, err := os.ReadFile(w.certFile)
 	if err != nil {
 		w.logger.Error(err, "Error reading webhook ca cert")
 	}
