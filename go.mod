@@ -1,6 +1,6 @@
 module github.com/bakito/operator-utils
 
-go 1.18
+go 1.20
 
 require (
 	github.com/fsnotify/fsnotify v1.6.0
