@@ -4,6 +4,7 @@ import (
 	"context"
 	"net/http"
 	"net/http/pprof"
+	"time"
 
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/manager"
@@ -33,8 +34,9 @@ func (ppr *pprofRunner) Start(ctx context.Context) error {
 	r.HandleFunc("/debug/pprof/trace", pprof.Trace)
 
 	srv := &http.Server{
-		Addr:    ppr.addr,
-		Handler: r,
+		Addr:              ppr.addr,
+		Handler:           r,
+		ReadHeaderTimeout: 1 * time.Second,
 	}
 
 	go func() {

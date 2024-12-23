@@ -9,7 +9,6 @@ import (
 )
 
 var _ = Describe("Types", func() {
-
 	Context("ApplyDefaults", func() {
 		var (
 			o    *Options

@@ -71,8 +71,8 @@ func (r *reconciler) createServerCertTemplate(notAfter time.Time) (*x509.Certifi
 
 // Actually sign the cert and return things in a form that we can use later on
 func createCert(template, parent *x509.Certificate, pub interface{}, parentPriv interface{}) (
-	cert *x509.Certificate, certPEM []byte, err error) {
-
+	cert *x509.Certificate, certPEM []byte, err error,
+) {
 	certDER, err := x509.CreateCertificate(rand.Reader, template, parent, pub, parentPriv)
 	if err != nil {
 		return
@@ -89,17 +89,17 @@ func createCert(template, parent *x509.Certificate, pub interface{}, parentPriv 
 func (r *reconciler) createCA(notAfter time.Time) (*rsa.PrivateKey, *x509.Certificate, []byte, error) {
 	rootKey, err := rsa.GenerateKey(rand.Reader, 2048)
 	if err != nil {
-		return nil, nil, nil, fmt.Errorf("error generating random key: %v", err)
+		return nil, nil, nil, fmt.Errorf("error generating random key: %w", err)
 	}
 
 	rootCertTmpl, err := r.createCACertTemplate(notAfter)
 	if err != nil {
-		return nil, nil, nil, fmt.Errorf("error generating CA cert: %v", err)
+		return nil, nil, nil, fmt.Errorf("error generating CA cert: %w", err)
 	}
 
 	rootCert, rootCertPEM, err := createCert(rootCertTmpl, rootCertTmpl, &rootKey.PublicKey, rootKey)
 	if err != nil {
-		return nil, nil, nil, fmt.Errorf("error signing the CA cert: %v", err)
+		return nil, nil, nil, fmt.Errorf("error signing the CA cert: %w", err)
 	}
 	return rootKey, rootCert, rootCertPEM, nil
 }
@@ -119,17 +119,17 @@ func (r *reconciler) createCerts(notAfter time.Time) (serverKey, serverCert, caC
 	// Then create the private key for the serving cert
 	servKey, err := rsa.GenerateKey(rand.Reader, 2048)
 	if err != nil {
-		return nil, nil, nil, fmt.Errorf("error generating random key: %v", err)
+		return nil, nil, nil, fmt.Errorf("error generating random key: %w", err)
 	}
 	servCertTemplate, err := r.createServerCertTemplate(notAfter)
 	if err != nil {
-		return nil, nil, nil, fmt.Errorf("failed to create the server certificate template: %v", err)
+		return nil, nil, nil, fmt.Errorf("failed to create the server certificate template: %w", err)
 	}
 
 	// create a certificate which wraps the server's public key, sign it with the CA private key
 	_, servCertPEM, err := createCert(servCertTemplate, caCertificate, &servKey.PublicKey, caKey)
 	if err != nil {
-		return nil, nil, nil, fmt.Errorf("error signing server certificate template: %v", err)
+		return nil, nil, nil, fmt.Errorf("error signing server certificate template: %w", err)
 	}
 	servKeyPEM := pem.EncodeToMemory(&pem.Block{
 		Type: "RSA PRIVATE KEY", Bytes: x509.MarshalPKCS1PrivateKey(servKey),

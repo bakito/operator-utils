@@ -25,9 +25,7 @@ var _ = Describe("Filter", func() {
 	})
 
 	Describe("Create", func() {
-		var (
-			e event.CreateEvent
-		)
+		var e event.CreateEvent
 		BeforeEach(func() {
 			e = event.CreateEvent{
 				Object: pod,
@@ -53,9 +51,7 @@ var _ = Describe("Filter", func() {
 	})
 
 	Describe("Delete", func() {
-		var (
-			e event.DeleteEvent
-		)
+		var e event.DeleteEvent
 		BeforeEach(func() {
 			e = event.DeleteEvent{
 				Object: pod,
@@ -81,9 +77,7 @@ var _ = Describe("Filter", func() {
 	})
 
 	Describe("Update", func() {
-		var (
-			e event.UpdateEvent
-		)
+		var e event.UpdateEvent
 		BeforeEach(func() {
 			e = event.UpdateEvent{
 				ObjectNew: pod,
@@ -109,9 +103,7 @@ var _ = Describe("Filter", func() {
 	})
 
 	Describe("Generic", func() {
-		var (
-			e event.GenericEvent
-		)
+		var e event.GenericEvent
 		BeforeEach(func() {
 			e = event.GenericEvent{
 				Object: pod,

@@ -11,7 +11,6 @@ import (
 
 // With get a logger for a given runtime object. namespace, name and kind are added as value.
 func With(base logr.Logger, object runtime.Object) logr.Logger {
-
 	l := base
 
 	if meta, ok := object.(metav1.Object); ok {

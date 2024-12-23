@@ -1,24 +1,19 @@
-# find or install mockgen
-ifeq (, $(shell which mockgen))
- $(shell go install github.com/golang/mock/mockgen@v1.6.0)
-endif
-ifeq (, $(shell which ginkgo))
- $(shell go install github.com/onsi/ginkgo/v2/ginkgo@latest)
-endif
+# Include toolbox tasks
+include ./.toolbox.mk
 
 # generate mocks
-mocks:
-	mockgen -destination pkg/mocks/logr/mock.go github.com/go-logr/logr LogSink
-	mockgen -destination pkg/mocks/client/mock.go sigs.k8s.io/controller-runtime/pkg/client Client
+mocks: tb.mockgen
+	$(TB_MOCKGEN) -destination pkg/mocks/logr/mock.go github.com/go-logr/logr LogSink
+	$(TB_MOCKGEN) -destination pkg/mocks/client/mock.go sigs.k8s.io/controller-runtime/pkg/client Client
 
-# Run go fmt against code
-fmt:
-	go fmt ./...
-
-# Run go vet against code
-vet:
-	go vet ./...
+# Format code
+fmt: tb.golines tb.gofumpt
+	$(TB_GOLINES) --base-formatter="$(TB_GOFUMPT)" --max-len=120 --write-output .
 
 # Run tests
-test: mocks fmt vet
-	go test ./...
+test: mocks fmt lint tb.ginkgo
+	$(TB_GINKGO) ./...
+
+# Run go golanci-lint
+lint: tb.golangci-lint
+	$(TB_GOLANGCI_LINT) run --fix
